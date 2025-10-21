@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom'; // ✅ NEW: Import Link
+
+// Backend URL constant
+const API_URL = "https://mbstu-research-backend.onrender.com";
 
 function HomePage() {
   const [user, setUser] = useState(null);
@@ -82,7 +84,7 @@ function HomePage() {
   const loadPostsFromBackend = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:5000/api/posts');
+      const response = await axios.get(`${API_URL}/api/posts`);
       setPosts(response.data);
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -117,7 +119,7 @@ const handleLike = async (postId) => {
     }
 
     // ✅ CORRECT: Use URL parameter instead of body
-    const response = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+    const response = await fetch(`${API_URL}/api/posts/${postId}/like`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -167,7 +169,7 @@ const handleComment = async (postId) => {
     console.log('🟢 DEBUG: Comment for post:', postId);
 
     const response = await axios.post(
-      `http://localhost:5000/api/posts/${postId}/comment`,
+      `${API_URL}/api/posts/${postId}/comment`,
       { text: commentText },
       {
         headers: {
@@ -316,7 +318,7 @@ const isPostLikedByUser = (post) => {
           postData.image = reader.result; // This is the base64 image data
           
           // Send to backend
-          fetch('http://localhost:5000/api/posts', {
+          fetch(`${API_URL}/api/posts`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -354,7 +356,7 @@ const isPostLikedByUser = (post) => {
         const fileFormData = new FormData();
         fileFormData.append('file', tempFile);
         
-        const fileResponse = await fetch('http://localhost:5000/api/upload/file', {
+        const fileResponse = await fetch(`${API_URL}/api/upload/file`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -375,7 +377,7 @@ const isPostLikedByUser = (post) => {
       }
 
       // Send to backend (for text posts)
-      const response = await fetch('http://localhost:5000/api/posts', {
+      const response = await fetch(`${API_URL}/api/posts`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
