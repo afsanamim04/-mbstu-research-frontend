@@ -19,8 +19,8 @@ function Logout({ setUser }) {
     // Show logout message
     alert('You have been logged out successfully!');
     
-    // Redirect to login page
-    navigate('/login');
+    // ✅ CHANGE: Redirect to HOME page instead of login
+    navigate('/'); // Home e redirect
   }, [navigate, setUser]);
 
   return (
