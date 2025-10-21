@@ -368,6 +368,7 @@ function App() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("profileName");
     localStorage.removeItem("userEmail");
+    localStorage.removeItem("userId");
     setUser(null);
   };
 
@@ -394,48 +395,50 @@ function App() {
         {/* Left Section - Logo and Navigation */}
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {/* Logo */}
-          <div
-            onMouseEnter={() => setShowLogoTooltip(true)}
-            onMouseLeave={() => setShowLogoTooltip(false)}
-            style={{
-              marginRight: "30px",
-              display: "flex",
-              alignItems: "center",
-              position: "relative",
-              cursor: "pointer"
-            }}
-          >
-            <img
-              src="/mbstu-logo.jpg"
-              alt="MBSTU Logo"
-              style={{ 
-                height: 45, 
-                width: 45,
-                borderRadius: "8px",
-                objectFit: "cover"
-              }}
-            />
-            <span
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
+            <div
+              onMouseEnter={() => setShowLogoTooltip(true)}
+              onMouseLeave={() => setShowLogoTooltip(false)}
               style={{
-                position: "absolute",
-                bottom: "-35px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                background: "#222",
-                color: "#fff",
-                padding: "6px 12px",
-                borderRadius: "6px",
-                fontSize: "12px",
-                whiteSpace: "nowrap",
-                visibility: showLogoTooltip ? "visible" : "hidden",
-                zIndex: 1000,
-                opacity: showLogoTooltip ? 1 : 0,
-                transition: "opacity 0.2s"
+                marginRight: "30px",
+                display: "flex",
+                alignItems: "center",
+                position: "relative",
+                cursor: "pointer"
               }}
             >
-              MBSTU Research Gate
-            </span>
-          </div>
+              <img
+                src="/mbstu-logo.jpg"
+                alt="MBSTU Logo"
+                style={{ 
+                  height: 45, 
+                  width: 45,
+                  borderRadius: "8px",
+                  objectFit: "cover"
+                }}
+              />
+              <span
+                style={{
+                  position: "absolute",
+                  bottom: "-35px",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: "#222",
+                  color: "#fff",
+                  padding: "6px 12px",
+                  borderRadius: "6px",
+                  fontSize: "12px",
+                  whiteSpace: "nowrap",
+                  visibility: showLogoTooltip ? "visible" : "hidden",
+                  zIndex: 1000,
+                  opacity: showLogoTooltip ? 1 : 0,
+                  transition: "opacity 0.2s"
+                }}
+              >
+                MBSTU Research Gate
+              </span>
+            </div>
+          </Link>
           
           {/* Navigation Icons */}
           <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -510,10 +513,10 @@ function App() {
       }}>
         <Routes>
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/profile-edit" element={<ProfileEdit />} />
+          <Route path="/profile-edit" element={<ProfileEdit user={user} setUser={setUser} />} />
           <Route path="/account" element={<AccountPage user={user} setUser={setUser} />} />
           <Route path="/" element={<HomePage user={user} />} />
-          <Route path="/notifications" element={<NotificationPage />} />
+          <Route path="/notifications" element={<NotificationPage user={user} />} />
           <Route path="/verify/:token" element={<Verify />} />
           <Route path="/login" element={<Login setUser={setUser} />} />
           <Route path="/logout" element={<Logout setUser={setUser} />} />
