@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 // Backend URL constant
 const API_URL = "https://mbstu-research-backend.onrender.com";
 
-export default function AccountPage() {
+export default function AccountPage({ user, setUser }) {
   // Profile States with localStorage default
   const [cover, setCover] = useState(localStorage.getItem('coverPic') || '');
   const [profilePic, setProfilePic] = useState(localStorage.getItem('profilePic') || '');
@@ -17,6 +17,39 @@ export default function AccountPage() {
   // ✅ UPDATED: Real posts from backend
   const [userPosts, setUserPosts] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  // ✅ Load user profile from backend
+  const loadUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const response = await fetch(`${API_URL}/api/user/profile`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const profileData = await response.json();
+        // Update states with backend data
+        setName(profileData.name || 'Your Name');
+        setDob(profileData.dob || '');
+        setGender(profileData.gender || '');
+        setBio(profileData.bio || '');
+        setProfilePic(profileData.profilePic || '');
+        setCover(profileData.coverPic || '');
+        
+        // Update localStorage
+        localStorage.setItem('profileName', profileData.name || 'Your Name');
+        localStorage.setItem('profileDob', profileData.dob || '');
+        localStorage.setItem('profileGender', profileData.gender || '');
+        localStorage.setItem('profileBio', profileData.bio || '');
+        localStorage.setItem('profilePic', profileData.profilePic || '');
+        localStorage.setItem('coverPic', profileData.coverPic || '');
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
 
   // ✅ Load user's posts from backend
   const loadUserPosts = async () => {
@@ -43,9 +76,43 @@ export default function AccountPage() {
     }
   };
 
-  // ✅ Load posts when component mounts AND when posts are updated
+  // ✅ Image upload function
+  const handleImageUpload = async (file, type) => {
+    try {
+      const token = localStorage.getItem('authToken');
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch(`${API_URL}/api/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+      
+      const data = await response.json();
+      if(response.ok) {
+        if (type === 'profile') {
+          setProfilePic(data.imageUrl);
+          localStorage.setItem('profilePic', data.imageUrl);
+        } else if (type === 'cover') {
+          setCover(data.imageUrl);
+          localStorage.setItem('coverPic', data.imageUrl);
+        }
+        setToast('Image uploaded successfully!');
+      } else {
+        setToast(data.message || 'Upload failed!');
+      }
+    } catch (error) {
+      setToast('Upload error: ' + error.message);
+    }
+  };
+
+  // ✅ Load posts and profile when component mounts
   useEffect(() => {
     loadUserPosts();
+    loadUserProfile();
 
     // ✅ Listen for post updates from Home page
     const handlePostsUpdated = () => {
@@ -62,10 +129,7 @@ export default function AccountPage() {
   function handleCoverChange(e) {
     const file = e.target.files[0];
     if (file && file.size < 5 * 1024 * 1024) {
-      const url = URL.createObjectURL(file);
-      setCover(url);
-      localStorage.setItem('coverPic', url);
-      setToast('Cover photo updated!');
+      handleImageUpload(file, 'cover');
     } else {
       setToast('File size too large!');
     }
@@ -74,10 +138,7 @@ export default function AccountPage() {
   function handleProfilePicChange(e) {
     const file = e.target.files[0];
     if (file && file.size < 5 * 1024 * 1024) {
-      const url = URL.createObjectURL(file);
-      setProfilePic(url);
-      localStorage.setItem('profilePic', url);
-      setToast('Profile photo updated!');
+      handleImageUpload(file, 'profile');
     } else {
       setToast('File size too large!');
     }
@@ -99,10 +160,17 @@ export default function AccountPage() {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`
           },
-          body: JSON.stringify({ name, dob, gender, bio })
+          body: JSON.stringify({ name, dob, gender, bio, profilePic, coverPic })
         });
 
         if (!response.ok) throw new Error('Failed to update profile');
+        
+        const updatedUser = await response.json();
+        
+        // ✅ Update user state in App.js
+        if (setUser && updatedUser.user) {
+          setUser(updatedUser.user);
+        }
       }
 
       setEditMode(false);
@@ -111,28 +179,6 @@ export default function AccountPage() {
       setToast(error.message || 'Something went wrong');
     }
   };
-
-/* const handleImageUpload = async (e) => {
-    const selectedFile = e.target.files[0];
-    const token = localStorage.getItem('authToken');
-    const formData = new FormData();
-    formData.append('image', selectedFile);
-
-    const response = await fetch(`${API_URL}/api/user/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + token
-      },
-      body: formData
-    });
-    
-    const data = await response.json();
-    if(response.ok) {
-      alert('Uploaded!');
-    } else {
-      alert(data.message || 'Upload failed!');
-    }
-  };*/
 
   React.useEffect(() => {
     if(toast) {
@@ -150,12 +196,12 @@ export default function AccountPage() {
           : "linear-gradient(90deg,#2256c2 60%,#5795f3 100%)",
         height: 250, 
         width: '100%',
-        border: '3px solid #e0e0e0', // ✅ Border added
+        border: '3px solid #e0e0e0',
         borderBottom: 'none',
         borderTopLeftRadius: 12,
         borderTopRightRadius: 12,
         position: 'relative',
-        marginBottom: '0' // ✅ No margin between cover and profile
+        marginBottom: '0'
       }}>
         {/* Cover camera button */}
         <label style={{
@@ -180,8 +226,8 @@ export default function AccountPage() {
       {/* Profile Section - WITH BORDER and connected to cover */}
       <div style={{
         background: '#fff',
-        border: '3px solid #e0e0e0', // ✅ Same border as cover
-        borderTop: 'none', // ✅ Connected to cover
+        border: '3px solid #e0e0e0',
+        borderTop: 'none',
         borderBottomLeftRadius: 12,
         borderBottomRightRadius: 12,
         padding: '30px 20px 20px 20px',
@@ -197,14 +243,13 @@ export default function AccountPage() {
           <div style={{
             position: 'relative',
             flexShrink: 0,
-            border: '2px solid #007bff', // ✅ Blue border for profile area
+            border: '2px solid #007bff',
             borderRadius: '12px',
             padding: '15px',
             background: '#f8f9fa'
           }}>
             <img 
               src={profilePic || "https://ui-avatars.com/api/?name=Profile"} 
-              //alt={`Profile photo of ${name}`} 
               alt={name}
               style={{
                 width: 120, 
@@ -284,9 +329,9 @@ export default function AccountPage() {
                   }}
                 >
                   <option value="">Select Gender</option>
-                  <option>Female</option>
-                  <option>Male</option>
-                  <option>Other</option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
+                  <option value="Other">Other</option>
                 </select>
                 <input
                   value={bio}
@@ -335,9 +380,9 @@ export default function AccountPage() {
               // View Mode: Show data
               <div style={{maxWidth: '400px'}}>
                 <h2 style={{margin: '0 0 10px 0', fontSize: '28px', color: '#333'}}>{name}</h2>
-                <p style={{margin: '5px 0', fontSize: '16px', color: '#555'}}><strong>DOB:</strong> {dob}</p>
-                <p style={{margin: '5px 0', fontSize: '16px', color: '#555'}}><strong>Gender:</strong> {gender}</p>
-                <p style={{margin: '5px 0 15px 0', fontSize: '16px', color: '#555'}}><strong>Bio:</strong> {bio}</p>
+                <p style={{margin: '5px 0', fontSize: '16px', color: '#555'}}><strong>DOB:</strong> {dob || 'Not set'}</p>
+                <p style={{margin: '5px 0', fontSize: '16px', color: '#555'}}><strong>Gender:</strong> {gender || 'Not set'}</p>
+                <p style={{margin: '5px 0 15px 0', fontSize: '16px', color: '#555'}}><strong>Bio:</strong> {bio || 'No bio yet'}</p>
                 <button 
                   onClick={() => setEditMode(true)}
                   style={{
@@ -397,9 +442,8 @@ export default function AccountPage() {
   );
 }
 
-// UserPosts component remains the same as before...
+// UserPosts component
 function UserPosts({ userPosts, loading, onPostsUpdate }) {
-  // ... (keep the existing UserPosts component code exactly as it was)
   const [editId, setEditId] = React.useState(null);
   const [editData, setEditData] = React.useState({ text: "" });
   const [toast, setToast] = React.useState('');
