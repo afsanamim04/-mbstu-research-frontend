@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ Add this import
 
 // Backend URL constant
 const API_URL = "https://mbstu-research-backend.onrender.com";
@@ -6,6 +7,7 @@ const API_URL = "https://mbstu-research-backend.onrender.com";
 function Login({ setUser }) {  // ✅ setUser prop receive korchi
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // ✅ Add this
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +32,8 @@ function Login({ setUser }) {  // ✅ setUser prop receive korchi
           });
         }
 
-        window.location.href = '/'; // Home e redirect
+        // ✅ CHANGE: Use navigate instead of window.location
+        navigate('/'); // Home e redirect
       } else {
         alert(data.message || 'Login failed!');
       }
