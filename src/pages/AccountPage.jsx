@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+// Backend URL constant
+const API_URL = "https://mbstu-research-backend.onrender.com";
+
 export default function AccountPage() {
   // Profile States with localStorage default
   const [cover, setCover] = useState(localStorage.getItem('coverPic') || '');
@@ -21,7 +24,7 @@ export default function AccountPage() {
       setLoading(true);
       const token = localStorage.getItem('authToken');
       
-      const response = await fetch('http://localhost:5000/api/posts/my-posts', {
+      const response = await fetch(`${API_URL}/api/posts/my-posts`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +93,7 @@ export default function AccountPage() {
       const token = localStorage.getItem('authToken');
       
       if (token) {
-        const response = await fetch('http://localhost:5000/api/user/profile', {
+        const response = await fetch(`${API_URL}/api/user/profile`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -115,7 +118,7 @@ export default function AccountPage() {
     const formData = new FormData();
     formData.append('image', selectedFile);
 
-    const response = await fetch('http://localhost:5000/api/user/upload', {
+    const response = await fetch(`${API_URL}/api/user/upload', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + token
@@ -418,7 +421,7 @@ function UserPosts({ userPosts, loading, onPostsUpdate }) {
   async function saveEdit() {
     try {
       const token = localStorage.getItem('authToken');
-      const response = await fetch(`http://localhost:5000/api/posts/${editId}`, {
+      const response = await fetch(`${API_URL}/api/posts/${editId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -450,7 +453,7 @@ function UserPosts({ userPosts, loading, onPostsUpdate }) {
     if(window.confirm("Are you sure?")) {
       try {
         const token = localStorage.getItem('authToken');
-        const response = await fetch(`http://localhost:5000/api/posts/${id}`, {
+        const response = await fetch(`${API_URL}/api/posts/${id}`, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
