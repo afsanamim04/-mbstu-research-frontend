@@ -109,7 +109,7 @@ export default function AccountPage() {
     }
   };
 
-  const handleImageUpload = async (e) => {
+/* const handleImageUpload = async (e) => {
     const selectedFile = e.target.files[0];
     const token = localStorage.getItem('authToken');
     const formData = new FormData();
@@ -129,7 +129,7 @@ export default function AccountPage() {
     } else {
       alert(data.message || 'Upload failed!');
     }
-  };
+  };*/
 
   React.useEffect(() => {
     if(toast) {
@@ -201,7 +201,8 @@ export default function AccountPage() {
           }}>
             <img 
               src={profilePic || "https://ui-avatars.com/api/?name=Profile"} 
-              alt={`Profile photo of ${name}`} 
+              //alt={`Profile photo of ${name}`} 
+              alt={name}
               style={{
                 width: 120, 
                 height: 120, 
