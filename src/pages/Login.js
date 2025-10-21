@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 
+// Backend URL constant
+const API_URL = "https://mbstu-research-backend.onrender.com";
+
 function Login({ setUser }) {  // ✅ setUser prop receive korchi
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -7,7 +10,7 @@ function Login({ setUser }) {  // ✅ setUser prop receive korchi
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
