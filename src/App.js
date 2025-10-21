@@ -8,7 +8,7 @@ import NotificationPage from './pages/NotificationPage';
 import Verify from './pages/Verify';
 import Login from './pages/Login';
 import Logout from "./pages/Logout";
-import axios from 'axios';
+//import axios from 'axios';
 import React, { useState, useEffect } from "react";
 
 // NavIcon component with React state
@@ -250,7 +250,7 @@ function App() {
       <nav style={navStyle}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <a
-            href="#"
+            href="/"
             className="logo-link"
             onClick={e => { 
               e.preventDefault(); 
