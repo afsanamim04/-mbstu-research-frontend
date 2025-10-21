@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-function Notification() {
+function Notification({ user }) {  // ✅ user prop receive korchi
   const [notifications, setNotifications] = useState([]);
 
   // Load notifications from localStorage
@@ -65,7 +65,9 @@ function Notification() {
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h1 style={{ margin: 0, color: '#304698' }}>Notifications</h1>
+          <h1 style={{ margin: 0, color: '#304698' }}>
+            Notifications {user && `- ${user.name}`}  {/* ✅ Show user name if available */}
+          </h1>
           <div>
             <button 
               onClick={markAllAsRead}
