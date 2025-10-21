@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
+// Backend URL constant
+const API_URL = "https://mbstu-research-backend.onrender.com";
+
 export default function Verify() {
   const { token } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/auth/verify/${token}`)
+    fetch(`${API_URL}/api/auth/verify/${token}`)
       .then(res => res.text())
       .then(text => {
         if (text.toLowerCase().includes('successful')) {
