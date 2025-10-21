@@ -11,6 +11,9 @@ import Logout from "./pages/Logout";
 //import axios from 'axios';
 import React, { useState, useEffect } from "react";
 
+// Backend URL constant
+const API_URL = "https://mbstu-research-backend.onrender.com";
+
 // NavIcon component with React state
 function NavIcon({ to, icon: Icon, label }) {
   const [showTooltip, setShowTooltip] = useState(false);
@@ -82,7 +85,7 @@ function RegisterPage() {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
